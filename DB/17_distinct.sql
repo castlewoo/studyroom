@@ -1,5 +1,5 @@
 -- 17_distinct.sql
-
+USE book_shop;
 SELECT author_lname FROM books;
 SELECT DISTINCT author_lname FROM books;
 
