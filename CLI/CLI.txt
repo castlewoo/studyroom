@@ -1,0 +1,38 @@
+pwd(print working directory): 디렉토리 경로 출력
+is : 파일 및 폴더 출력
+~ : 홈 디렉토리
+/ : 루트 디렉토리
+mkdir [폴더명] : 신규 폴더 생성
+cd .. : 뒤로 가기
+rm -r [폴더명] : 폴더 삭제
+mv a b : a라는 이름을 b로 변경
+touch [파일명] : a 파일 생성
+rm [파일명] : 파일 삭제
+cat [파일명] : 파일 내용 출력
+mv [파일/폴더명] [경로] : 파일 또는 폴더 이동
+cp [파일] [경로] : 파일 복사
+cp -r[폴더][경로] : 폴더 복사
+git checkout 일련번호: 그때 상태로 돌아감
+git remote add [저장소이름][저장소주소]: 저장소 이름: 내맘대로 해도됨 but 일반적으로는 origin이라는 이름을 붙임
+git remote -v: 원격 저장소 주소 확인
+git push [저장소이름][브랜치이름]
+git push orgin main
+
+git에 올리는 방법
+1. git remote add origin [주소]
+2. main이 아닐 경우엔 git branch -M main
+3. git push origin main
+
+
+rm -rf [폴더] 
+
+git pull origin main: 차이만 가져오는거
+git branch new : new라는 head를 만드는거
+git checkout new: new라는 해더로 이동
+git merge new: new를 main으로 합병
+
+git add .
+git commit -m "하고싶은 말"
+git remote add origin https://github.com/castlewoo/studyroom.git
+git pull origin main
+git push origin main

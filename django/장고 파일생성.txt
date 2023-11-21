@@ -1,0 +1,57 @@
+장고 파일생성
+django-admin startproject form
+이름 바꾸기
+mv form 01_FORM
+열기
+code 01_FORM
+
+1. 앱 생성하기
+python manage.py startapp 앱 이름
+
+2. 앱 등록하기
+settings.py에 들어가서 INSTALLED_APPS 에 앱 이름 등록하기
+
+3. master url에 등록
+urlpatterns에 path('앱 이름/',include('앱이름.urls')) 
+from django.urls import path 뒤에 include 포함시키기
+
+4. review에 ulrs.py  생성하기
+from django.urls import path
+from . import views
+
+5.views에 가기
+def index(request):
+
+    return render(request, '~~.html')
+
+6. 앱 파일에 templates 파일 추가하기
+
+
+## 데이터베이스에 넣기
+python manage.py makemigrations <앱이름>
+python manage.py migrate <앱이름>
+하면 migrations에 데이터가 등록됨
+
+
+Practice
+crud views.py 바꾸기
+
+NoReverseMatch 는 url 오류다
+detail
+url
+vies
+base2
+forms
+
+
+touch README.md .gitignore 먼저 만들기
+.gitignore을 하는 경우는 중요 파일이 안에 있을때 가리는거
+
+
+관리자 만들기
+python manage.py createsuperuser
+
+admin.py에
+
+from .models import Article
+admin.site.register(Article)
