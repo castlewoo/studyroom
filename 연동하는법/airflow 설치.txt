@@ -1,0 +1,125 @@
+airflow 설치
+- airflow 설치 디렉터리생성
+- 계정별로 설치
+~/airflow 모듈화 되어있음
+	- 설치는 PIP 이용
+1. 관련 디렉터리 생성
+- ~/airflow 디렉터리 생성(디렉터리명을 airflow로 하는게 일반적)
+	- airflow 기능관련 설치 디렉터리
+- 스케줄러 프로그램 관련 디렉터리 생성(디렉터리명은 임의 사용)
+	- airflow conf  파일에 등록해야함
+	- 수업에서는 study 디렉터리로 생성
+	- study > dags 디렉터리를 스케줄러 관련 폴더로 사용
+	- dag : airflow의 스케줄러 프로그램 의미
+		- airflow 수업은 dag 프로그램을 배운다는 것과 같은 의미
+
+2. 환경변수 설정
+# airflow home dir 관련 설정/version 관련 설정
+export AIRFLOW_HOME=~/airflow
+export AIRFLOW_VERSION=2.3.4
+
+# python 관련 환경변수 설정
+# python 명령어 -> python3 명령어로 변경
+# python version을 얻기 위한 변수 설정
+# airflow 설치시 필요한 파이썬의 version을 추출하기 위한 변수
+export PYTHON_VERSION="$(python3 --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
+# airflow 다운 경로
+export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+
+3. pip 이용해서 설치 진행
+- 관련 소스는 깃헙으로 공개중 : CONSTRAINT_URL에서 다운
+- airflow 버전 / python 버전 명시해서 다운 후 설치
+pip install "apach-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+
+ERROR: trio 0.23.1 has requirement exceptiongroup>=1.0.0rc9; python_version < "3.11", but you'll have exceptiongroup 1.0.0rc8 which is incompatible.
+ERROR: trio 0.23.1 has requirement sniffio>=1.3.0, but you'll have sniffio 1.2.0 which is incompatible.
+ERROR: referencing 0.31.1 has requirement attrs>=22.2.0, but you'll have attrs 22.1.0 which is incompatible.
+ERROR: jupyterlab-server 2.25.2 has requirement jsonschema>=4.18.0, but you'll have jsonschema 4.13.0 which is incompatible.
+ERROR: jupyterlab-server 2.25.2 has requirement requests>=2.31, but you'll have requests 2.28.0 which is incompatible.
+ERROR: jupyter-events 0.9.0 has requirement jsonschema[format-nongpl]>=4.18.0, but you'll have jsonschema 4.13.0 which is incompatible.
+
+4. airflow 관련 설정
+1) db 초기화
+- airflow는 작업 스케줄을 위해서 sqlite db를 구동 : db 초기화가 필요
+	- airflow 사용 시 문제가 있을 때 db 초기화 진행(백업필요)
+airflow db init
+2) 관리자 계정 등록
+airflow users create \
+    --username admin \
+    --firstname Peter \
+    --lastname Parker \
+    --role Admin \
+    --email spiderman@superhero.org
+3) airflow 스케줄 프로그램 폴더 설정파일에 등록
+- ~/study > dags : dag 저장 폴더
+- airflow 설정 파일
+~/airflow/airflow.cfg
+1) dags_folder 위치 확인
+2) example dags False로 변경
+
+5. airflow 실행
+1) webserver : 관리툴 (독립터미널)
+airflow webserver --port 8082
+2) 스케줄러 실행 : 독립 터미널
+airflow scheduler
+
+6. 설정 변경 등 재작업 후
+airflow db reset 
+airflow db init
+# admin 다시 등록 필요할 수 있음
+airflow users create \
+    --username admin \
+    --firstname Peter \
+    --lastname Parker \
+    --role Admin \
+    --email spiderman@superhero.org
+
+###############
+예제 dags
+###############
+# 기본 import 
+from datetime import timedelta # 작업 후가 설정을 위해 import
+from datetime import datetime # 전체 작업 자동화 시작 시간 설정
+
+from airflow import DAG # DAG 인스턴스화에 사용하는 라이브러리
+
+# operator 사용위해 import
+from airflow.operators.bash_operator import BashOperator
+from airflow.utils.dates import days_ago
+
+####
+# 1. airflow 스케줄 관련 파라미터 설정
+# 딕셔너리로 구성
+# airflow로 전달이 되어서 meta db로 사용하게 됨
+default_args = {
+	'owrner' : 'airflow',
+	'depends_on_pas' : False,
+	'start_date' : datetime(2024,1,1),
+	'email' :['메일주소'],
+	'email_on_failure' :False,
+	'email_on_retry' :False,
+	'retries' :1, # 작업 실패 시 재시도 횟수
+	'retry_delay' :timedelta(minutes=5), # 재시도 기간
+	'end_date' :datetime(2024,1,5) # 작업 종료
+}
+
+# 스케줄 객체 생성 : DAG 모듈
+dag = DAG(
+	'helloworld', # 스케줄 이름(임의로 개발자가 명시)
+	default_arg = default_args, # 기본 설정 파라미터
+	description = 'echo helloworld', # 스케줄 설명문구
+	schedule_interval=timedelta(days=1), # 하루에 한번씩 본 스케줄 작업을 진행
+)
+
+# task 생성 - 실제 실행되어야 할 작업(dag 객체에 종속)
+# 객체변수명 = operator 종류모듈(내용)
+# 종류모듈 : 터미널 명령어 BashOperator/코드직접실행 CodeOperator
+# python 프로그램일시 BashOperator 사용
+t1=BashOperator(
+	task_id='echo_hello',
+	bash_command='echo "Hello, World!"',
+	dag=dag
+)
+
+# 코드를 스케줄러에 등록
+# 관리도구(web)이용해서 실행 시작

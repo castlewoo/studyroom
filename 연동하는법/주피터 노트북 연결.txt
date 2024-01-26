@@ -1,0 +1,37 @@
+주피터 노트북 연결
+- 환경설정파일에서 셋팅
+- 도커 우분투인 경우
+vim ~/.bashrc
+export PYSPARK_DRIVER_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+
+source ~/.bashrc
+
+## log 정보 출력 생략
+pyspark : log정보 pylog4j 프로세스 이용해서 기록 -> spark log4j 와 연결
+
+log 설정 변경 시 spark log4j 를 변경
+
+cd
+cd spark/conf
+ls
+
+cp log4j.properties.template log4j.properties
+vim log4j.properties
+
+log4j.rootCategory=INFO, console 을
+log4j.rootCategory=WARN, console 으로 변경
+
+### 하둡의 hdfs(저장장치) 핸들링 명령어
+- 모든명령어 : hdfs로 시작 그 뒤에 명령내릴 객체 쓰고 그 뒤에 명령어
+hdfs namenode -format
+하둡 명령어 -format을 namenode에게 전달
+
+- 하둡 저장장치 자체에 명령은 hdfs dfs
+- 하둡 datanode에 디렉터리 생성
+hdfs dfs -mkdir 디렉터리명
+- 하둡 datanode의 현재 디렉터리 상황
+hdfs dfs -ls /
+- 하둡 datanode에 데이터 이동
+hdfs dfs -put 원본파일 이동디렉터리
+hdfs dfs -put score.txt /rdd

@@ -1,0 +1,23 @@
+- mysql 시작
+1. 도커 환경에서 사용 이므로 service 등록이불가 수동으로 mysql 실행
+2. 터미널
+- cd (계정 홈 디렉터리)
+- service mysql start
+
+mysql -u root
+
+3. mysql 내에서  확인
+db 확인
+show databases;
+
+etlmysql 확인 : dw db
+
+> create database etlmysqlDM;
+
+etlmysqlDM 확인 : dm db
+
+dm db 사용자 계정 생성
+
+create user bigDM@'%' identified by 'bigDM1234@';
+권한 부여
+grant all privileges on *.* to bigDM@'%' with grant option;

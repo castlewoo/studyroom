@@ -1,0 +1,51 @@
+mysql 설치
+- 데이터 마트와 데이터 웨어하우스 endpoint로 사용할 공간
+- 데이터 마트는 최종 저장공간 : 서비스와 직접 연결된 공간(장고에 연결되는 db)
+- apt install 로 설치해야 함
+- 도커인경우
+cd
+apt-get update -y
+
+apt-get install mysql-server -y
+
+- mysql 서버 시작
+service mysql restart
+
+- mysql 설정
+mysql_secure_installation
+
+- mysql 접속
+root password skipping 된 경우 : 안만든경우
+docker 
+mysql -u root
+
+- root는 원격접속 불가
+- mysql은 hadoop/spark가 사용 : 접속은 ssh(원격사용)
+- 새로 user 생성해서 사용
+- spark가 사용할 mysql user 생성
+- mysql 안에서 작업
+- 사용자 생성 명령
+mysql > create user bigMysql@'%' identified by 'bigMysql1234@';
+- 사용자 권한 설정 : 모든권한(*.*)
+mysql >  grant all privileges on *.* to bigMysql@'%' with grant option;
+
+- 기본 database 설정
+- if not exists : 없으면 
+create database if not exists etlmysql;
+- 확인
+show databases;
+- 종료
+exit
+
+- mysql-dbjava 연결 : jdbc 설치 : 다른응용프로그램과 db서버를 연결해주는 역할을 함
+- jdbc 다운 : os 버전에 맞게 다운해야 함, db 종류에 맞게 다운
+wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java_8.0.29-1ubuntu20.04_all.deb
+
+dpkg -i mysql-connector-java_8.0.29-1ubuntu20.04_all.deb
+
+
+### data 준비
+- fred data api 키 생성
+- 필요 패키지 install
+pip install fredapi
+077c57848647a5550af7c02505c9d61a
